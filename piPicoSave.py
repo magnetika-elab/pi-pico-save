@@ -1,4 +1,6 @@
-import os, re, time, datetime, pyautogui
+import os, re, time, pyautogui
+import tkinter as tk
+from tkinter import messagebox
 
 
 def waitToRun(delay):
@@ -22,11 +24,21 @@ def get_sequence():
     ]
     return sequence
 
+def show_message(title, message):
+    messagebox.showinfo(title, message)
+
+
 def main():
     waitToRun(10)
-    time_at_call = datetime.datetime.now()
-    #(255, 15),
-    sequence = get_sequence()
+    try:
+        sequence = get_sequence()
+    except FileNotFoundError:
+        root = tk.Tk()
+        root.withdraw()  # Hides the main window
+        # Show the message box
+        show_message("Error", "Must run setup_mouse_clicks.py before auto backup can function")
+        root.mainloop()
+
     for entry in sequence:
         if type(entry) == tuple:
             x, y = entry
@@ -34,7 +46,7 @@ def main():
             time.sleep(1)
         elif type(entry) == str:
             if entry == 'filename':
-                pyautogui.typewrite('BACKUP')#pyautogui.typewrite(time_at_call.strftime("%Y-%m-%d %H%M")) 
+                pyautogui.typewrite('BACKUP')
     return
 
 if __name__ == '__main__':
