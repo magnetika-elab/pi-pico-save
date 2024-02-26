@@ -22,12 +22,11 @@ def get_sequence():
     ]
     return sequence
 
-def main(sequence):
+def main():
     waitToRun(10)
     time_at_call = datetime.datetime.now()
     #(255, 15),
     sequence = get_sequence()
-    
     for entry in sequence:
         if type(entry) == tuple:
             x, y = entry
