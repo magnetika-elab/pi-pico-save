@@ -35,7 +35,11 @@ def handle_sequence_item(sequence_item, button_dictionary):
     action_optional = False if action_required == 'required' else True
     if action_type == 'button':
         button_image_path = button_dictionary[action_input]
-        button_location = pyautogui.locateCenterOnScreen(button_image_path)
+        try:
+            button_location = pyautogui.locateCenterOnScreen(button_image_path)
+        except Exception as e:
+            print(f'{action_input}: {e}')
+            button_location = None
 
         if button_location is not None:
             pyautogui.click(button_location)
