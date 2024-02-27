@@ -59,12 +59,13 @@ def run_sequence(sequence, button_dictionary, delay_after_action = 1):
 def main():
     #waitToRun(10)
     button_dictionary = load_button_images()
+    color_mode = 'darkmode'
     sequence = [
-        (('button', 'required', 'save_icon_lightmode'),      None),
-        (('button', 'required', 'save_data_text_lightmode'), None),
-        (('button', 'optional', 'continue_lightmode'),       None),
-        (('text',    None,      'BACKUP'),                   None),
-        (('button', 'required', 'final_save_lightmode'),     ('button', 'required', 'save_and_overwrite_lightmode')),
+        (('button', 'required', f'save_icon_{color_mode}'),      None),
+        (('button', 'required', f'save_data_text_{color_mode}'), None),
+        (('button', 'optional', f'continue_{color_mode}'),       None),
+        (('text',    None,      'BACKUP'),                       None),
+        (('button', 'required', f'final_save_{color_mode}'),     ('button', 'required', f'save_and_overwrite_{color_mode}')),
     ]    
     run_sequence(sequence, button_dictionary)    
 
