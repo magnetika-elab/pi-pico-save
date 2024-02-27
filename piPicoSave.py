@@ -58,7 +58,7 @@ def handle_sequence_item(sequence_item, button_dictionary):
     main_action, fallback_action = sequence_item
     action_type, action_required, action_input = main_action
     action_optional = False if action_required == 'required' else True
-
+    action_successfully_performed = False
     if action_type == 'button':
         # Get all image paths for the specified button.
         button_image_paths = [
@@ -96,23 +96,24 @@ def handle_sequence_item(sequence_item, button_dictionary):
         )
         if button_location is not None:
             pyautogui.click(button_location)
-            return True
+            action_successfully_performed = True
         # If the button is not found, handle the fallback action or raise an exception if it's required.
         elif button_location is None and not action_optional and fallback_action is not None:
-            handle_sequence_item((fallback_action, None), button_dictionary)
+            action_successfully_performed = handle_sequence_item((fallback_action, None), button_dictionary)
         elif button_location is None and not action_optional and fallback_action is None:
             raise ButtonNotFoundException(action_input)
 
     # Handle text typing
     elif action_type == 'text':
         pyautogui.typewrite(str(action_input))
-        return True
+        action_successfully_performed = True
+    return action_successfully_performed
 
 
 def run_sequence(sequence, button_dictionary, delay_after_action = 1):
     for sequence_item in sequence:
-        action_done = handle_sequence_item(sequence_item, button_dictionary)
-        if action_done:
+        action_successfully_performed = handle_sequence_item(sequence_item, button_dictionary)
+        if action_successfully_performed:
             time.sleep(delay_after_action)
 
 def main():
