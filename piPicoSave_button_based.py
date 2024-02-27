@@ -11,8 +11,15 @@ def moveClick(x,y, delay = .25):
     time.sleep(.25)
     pyautogui.click(x, y)
     time.sleep(.25)
-    
+
+def determine_environment():
+    uname_results = platform.uname()
+    string = f'{uname_results.node} is {uname_results.system} {uname_results.release} on {uname_results.machine}'
+    print(string)
+
+
 def load_button_images(supplied_button_directory=None):
+
     button_image_directory = os.path.join(os.getcwd(), 'on_screen_buttons') if supplied_button_directory is None else supplied_button_directory
     button_images = [
         (filename[:filename.index('.')], os.path.join(button_image_directory, filename)) 
@@ -57,19 +64,21 @@ def run_sequence(sequence, button_dictionary, delay_after_action = 1):
         time.sleep(delay_after_action)
 
 def main():
-    print(os.uname())
-    print(platform.system(), platform.release(), platform.version())
     #waitToRun(10)
+    determine_environment()
     button_dictionary = load_button_images()
-    color_mode = 'darkmode'
-    sequence = [
-        (('button', 'required', f'save_icon_{color_mode}'),      None),
-        (('button', 'required', f'save_data_text_{color_mode}'), None),
-        (('button', 'optional', f'continue_{color_mode}'),       None),
-        (('text',    None,      'BACKUP'),                       None),
-        (('button', 'required', f'final_save_{color_mode}'),     ('button', 'required', f'save_and_overwrite_{color_mode}')),
-    ]    
-    run_sequence(sequence, button_dictionary)    
+    for color_mode in ['lightmode', 'darkmode']:
+        sequence = [
+            (('button', 'required', f'save_icon_{color_mode}'),      None),
+            (('button', 'required', f'save_data_text_{color_mode}'), None),
+            (('button', 'optional', f'continue_{color_mode}'),       None),
+            (('text',    None,      'BACKUP'),                       None),
+            (('button', 'required', f'final_save_{color_mode}'),     ('button', 'required', f'save_and_overwrite_{color_mode}')),
+        ]
+        try:
+            run_sequence(sequence, button_dictionary)
+        except ButtonNotFoundException:
+            pass
 
 
 if __name__ == '__main__':
