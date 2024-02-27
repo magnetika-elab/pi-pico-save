@@ -71,7 +71,7 @@ def run_sequence(sequence, button_dictionary, delay_after_action = 1):
         time.sleep(delay_after_action)
 
 def main():
-    #waitToRun(10)
+    waitToRun(10)
     determine_environment()
     button_dictionary = load_button_images()
     if find_on_screen(button_dictionary['save_icon_lightmode']) is not None:
