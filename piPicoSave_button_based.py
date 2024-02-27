@@ -18,9 +18,14 @@ def determine_environment():
     print(string)
 
 
-def load_button_images(supplied_button_directory=None):
 
-    button_image_directory = os.path.join(os.getcwd(), 'on_screen_buttons') if supplied_button_directory is None else supplied_button_directory
+def load_button_images(supplied_button_directory=None):
+    uname_results = platform.uname()
+    button_image_directory = (
+        os.path.join(os.getcwd(), 'on_screen_buttons', uname_results.system, uname_results.machine)
+        if supplied_button_directory is None
+        else supplied_button_directory
+    )
     button_images = [
         (filename[:filename.index('.')], os.path.join(button_image_directory, filename)) 
         for filename in os.listdir(button_image_directory) 
@@ -35,6 +40,13 @@ class ButtonNotFoundException(Exception):
         self.button_name = button_name
         super().__init__(f"Button '{button_name}' not found on screen.")
 
+def find_on_screen(button_image_path):
+    try:
+        button_location = pyautogui.locateCenterOnScreen(button_image_path)
+    except Exception as e:
+        button_location = None
+    return button_location
+
 
 def handle_sequence_item(sequence_item, button_dictionary):
     main_action, fallback_action = sequence_item
@@ -42,12 +54,7 @@ def handle_sequence_item(sequence_item, button_dictionary):
     action_optional = False if action_required == 'required' else True
     if action_type == 'button':
         button_image_path = button_dictionary[action_input]
-        try:
-            button_location = pyautogui.locateCenterOnScreen(button_image_path)
-        except Exception as e:
-            print(f'{action_input}: {e}')
-            button_location = None
-
+        button_location = find_on_screen(button_image_path)
         if button_location is not None:
             pyautogui.click(button_location)
         elif button_location is None and not action_optional and fallback_action is not None:
@@ -67,18 +74,20 @@ def main():
     #waitToRun(10)
     determine_environment()
     button_dictionary = load_button_images()
-    for color_mode in ['lightmode', 'darkmode']:
-        sequence = [
-            (('button', 'required', f'save_icon_{color_mode}'),      None),
-            (('button', 'required', f'save_data_text_{color_mode}'), None),
-            (('button', 'optional', f'continue_{color_mode}'),       None),
-            (('text',    None,      'BACKUP'),                       None),
-            (('button', 'required', f'final_save_{color_mode}'),     ('button', 'required', f'save_and_overwrite_{color_mode}')),
-        ]
-        try:
-            run_sequence(sequence, button_dictionary)
-        except ButtonNotFoundException:
-            pass
+    if find_on_screen(button_dictionary['save_icon_lightmode']) is not None:
+        color_mode = 'lightmode'
+    elif find_on_screen(button_dictionary['save_icon_darkmode']) is not None:
+        color_mode = 'darkmode'
+    else:
+        exit()
+    sequence = [
+        (('button', 'required', f'save_icon_{color_mode}'),      None),
+        (('button', 'required', f'save_data_text_{color_mode}'), None),
+        (('button', 'optional', f'continue_{color_mode}'),       None),
+        (('text',    None,      'BACKUP'),                       None),
+        (('button', 'required', f'final_save_{color_mode}'),     ('button', 'required', f'save_and_overwrite_{color_mode}')),
+    ]
+    run_sequence(sequence, button_dictionary)
 
 
 if __name__ == '__main__':
