@@ -6,14 +6,14 @@ from tkinter import messagebox
 def waitToRun(delay):
     print("Executing Picolog Backup in {0} seconds...".format(delay))
     time.sleep(delay)
-    return
+
 
 def moveClick(x,y, delay = .25):
     pyautogui.moveTo(x, y)
     time.sleep(.25)
     pyautogui.click(x, y)
     time.sleep(.25)
-    return
+
 
 def get_sequence():
     with open('mouse_recording.txt', 'r') as file:
@@ -23,6 +23,7 @@ def get_sequence():
         for line in lines
     ]
     return sequence
+
 
 def show_message(title, message):
     messagebox.showinfo(title, message)
