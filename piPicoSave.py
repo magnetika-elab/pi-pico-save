@@ -20,19 +20,20 @@ def determine_environment():
 
 
 def load_button_images(supplied_button_directory=None):
-    uname_results = platform.uname()
     button_image_directory = (
-        os.path.join(os.getcwd(), 'on_screen_buttons', uname_results.system, uname_results.machine)
+        os.path.join(os.getcwd(), 'on_screen_buttons')
         if supplied_button_directory is None
         else supplied_button_directory
     )
     button_images = [
-        (filename[:filename.index('.')], os.path.join(button_image_directory, filename)) 
+        (filename[:filename.rfind('_')], os.path.join(button_image_directory, filename)) 
         for filename in os.listdir(button_image_directory) 
         if filename.endswith('.png')]
     button_dict = {}
     for button_name, button_path in button_images:
-        button_dict[button_name] = button_path
+        if button_name not in button_dict:
+            button_dict[button_name] = []
+        button_dict[button_name].append(button_path)
     return button_dict
 
 class ButtonNotFoundException(Exception):
@@ -53,8 +54,11 @@ def handle_sequence_item(sequence_item, button_dictionary):
     action_type, action_required, action_input = main_action
     action_optional = False if action_required == 'required' else True
     if action_type == 'button':
-        button_image_path = button_dictionary[action_input]
-        button_location = find_on_screen(button_image_path)
+        button_image_paths = button_dictionary[action_input]
+        button_image_path = None
+        if True in list(map(lambda i: i is not None, list(map(find_on_screen, button_image_paths)))):
+            button_image_path = button_image_paths[list(map(lambda i: i is not None, list(map(find_on_screen, button_image_paths)))).index(True)]
+        button_location = find_on_screen(button_image_path) if button_image_path is not None else None
         if button_location is not None:
             pyautogui.click(button_location)
         elif button_location is None and not action_optional and fallback_action is not None:
@@ -71,21 +75,15 @@ def run_sequence(sequence, button_dictionary, delay_after_action = 1):
         time.sleep(delay_after_action)
 
 def main():
-    waitToRun(10)
     determine_environment()
+    waitToRun(10)
     button_dictionary = load_button_images()
-    if find_on_screen(button_dictionary['save_icon_lightmode']) is not None:
-        color_mode = 'lightmode'
-    elif find_on_screen(button_dictionary['save_icon_darkmode']) is not None:
-        color_mode = 'darkmode'
-    else:
-        exit()
     sequence = [
-        (('button', 'required', f'save_icon_{color_mode}'),      None),
-        (('button', 'required', f'save_data_text_{color_mode}'), None),
-        (('button', 'optional', f'continue_{color_mode}'),       None),
+        (('button', 'required', f'save_icon'),      None),
+        (('button', 'required', f'save_data_text'), None),
+        (('button', 'optional', f'continue'),       None),
         (('text',    None,      'BACKUP'),                       None),
-        (('button', 'required', f'final_save_{color_mode}'),     ('button', 'required', f'save_and_overwrite_{color_mode}')),
+        (('button', 'required', f'final_save'),     ('button', 'required', f'save_and_overwrite')),
     ]
     run_sequence(sequence, button_dictionary)
 
