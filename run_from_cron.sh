@@ -1,1 +1,1 @@
-python3 ~/Scripts/pi-pico-save/piPicoSave.py
+python3 ~/Scripts/pico-save/PicoSave.py
