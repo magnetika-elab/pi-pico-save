@@ -96,6 +96,7 @@ def handle_sequence_item(sequence_item, button_dictionary):
         )
         if button_location is not None:
             pyautogui.click(button_location)
+            return True
         # If the button is not found, handle the fallback action or raise an exception if it's required.
         elif button_location is None and not action_optional and fallback_action is not None:
             handle_sequence_item((fallback_action, None), button_dictionary)
@@ -105,12 +106,14 @@ def handle_sequence_item(sequence_item, button_dictionary):
     # Handle text typing
     elif action_type == 'text':
         pyautogui.typewrite(str(action_input))
+        return True
 
 
 def run_sequence(sequence, button_dictionary, delay_after_action = 1):
     for sequence_item in sequence:
-        handle_sequence_item(sequence_item, button_dictionary)
-        time.sleep(delay_after_action)
+        action_done = handle_sequence_item(sequence_item, button_dictionary)
+        if action_done:
+            time.sleep(delay_after_action)
 
 def main():
     determine_environment()
