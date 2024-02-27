@@ -1,5 +1,5 @@
 import os, re, time, pyautogui
-
+import platform
 
 def waitToRun(delay):
     print("Executing Picolog Backup in {0} seconds...".format(delay))
@@ -57,6 +57,7 @@ def run_sequence(sequence, button_dictionary, delay_after_action = 1):
         time.sleep(delay_after_action)
 
 def main():
+    print(platform.system(), platform.release(), platform.version())
     #waitToRun(10)
     button_dictionary = load_button_images()
     color_mode = 'darkmode'
