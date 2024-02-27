@@ -73,7 +73,7 @@ def run_sequence(sequence, button_dictionary, delay_after_action = 1):
 
 def main():
     determine_environment()
-    waitToRun(0)
+    waitToRun(10)
     button_dictionary = load_button_images()
     sequence = [
         (('button', 'required', f'save_icon'),      None),
