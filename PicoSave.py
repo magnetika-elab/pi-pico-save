@@ -27,8 +27,7 @@ def find_on_screen(button_image_path):
 def load_button_images(supplied_button_directory=None):
     # Determine the directory where button images are stored.
     button_image_directory = (
-        #os.path.join(os.getcwd(), 'on_screen_buttons')  # Use default directory if none supplied.
-        'on_screen_buttons'
+        os.path.join(os.getcwd(), 'on_screen_buttons')  # Use default directory if none supplied.
         if supplied_button_directory is None
         else supplied_button_directory  # Use supplied directory if provided.
     )
