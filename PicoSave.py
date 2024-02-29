@@ -19,7 +19,7 @@ class ButtonNotFoundException(Exception):
 
 def find_on_screen(button_image_path):
     try:
-        button_location = pyautogui.locateCenterOnScreen(button_image_path)
+        button_location = pyautogui.locateCenterOnScreen(button_image_path, confidence=.5)
     except Exception as e:
         button_location = None
     return button_location
@@ -27,7 +27,8 @@ def find_on_screen(button_image_path):
 def load_button_images(supplied_button_directory=None):
     # Determine the directory where button images are stored.
     button_image_directory = (
-        os.path.join(os.getcwd(), 'on_screen_buttons')  # Use default directory if none supplied.
+        #os.path.join(os.getcwd(), 'on_screen_buttons')  # Use default directory if none supplied.
+        'on_screen_buttons'
         if supplied_button_directory is None
         else supplied_button_directory  # Use supplied directory if provided.
     )
@@ -101,7 +102,7 @@ def handle_sequence_item(sequence_item, button_dictionary):
         elif button_location is None and not action_optional and fallback_action is not None:
             action_successfully_performed = handle_sequence_item((fallback_action, None), button_dictionary)
         elif button_location is None and not action_optional and fallback_action is None:
-            raise ButtonNotFoundException(action_input)
+            raise ButtonNotFoundException(f'{action_input}\t{button_image_paths}')
 
     # Handle text typing
     elif action_type == 'text':
@@ -118,7 +119,7 @@ def run_sequence(sequence, button_dictionary, delay_after_action = 1):
 
 def main():
     determine_environment()
-    waitToRun(10)
+    waitToRun(0)
     button_dictionary = load_button_images()
     sequence = [
         (('button', 'required', f'save_icon'),      None),
