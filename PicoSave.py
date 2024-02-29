@@ -19,7 +19,7 @@ class ButtonNotFoundException(Exception):
 
 def find_on_screen(button_image_path):
     try:
-        button_location = pyautogui.locateCenterOnScreen(button_image_path, confidence=.5)
+        button_location = pyautogui.locateCenterOnScreen(button_image_path, confidence=.9)
     except Exception as e:
         button_location = None
     return button_location
@@ -118,7 +118,7 @@ def run_sequence(sequence, button_dictionary, delay_after_action = 1):
 
 def main():
     determine_environment()
-    waitToRun(0)
+    waitToRun(10)
     button_dictionary = load_button_images()
     sequence = [
         (('button', 'required', f'save_icon'),      None),
