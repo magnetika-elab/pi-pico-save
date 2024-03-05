@@ -22,15 +22,11 @@ def find_on_screen(button_image_path):
     try:
         button_location = pyautogui.locateCenterOnScreen(button_image_path, confidence=.8)
     except pyautogui.ImageNotFoundException as e:
-        button_location = None
-    if button_location == None:
-        try:
-            
-            screnshot = pyautogui.screenshot()
-            button_location = pyautogui.locate(button_image_path, screnshot, confidence=.7)
-        except pyautogui.ImageNotFoundException as e:
-            print(repr(e))
-            button_location = None
+            try:
+                screnshot = pyautogui.screenshot()
+                button_location = pyautogui.locate(button_image_path, screnshot, confidence=.7)
+            except pyautogui.ImageNotFoundException as e:
+                button_location = None
     return button_location
 
 def load_button_images(supplied_button_directory=None):
